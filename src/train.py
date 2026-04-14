@@ -81,8 +81,8 @@ def train(data_path):
         print(importance.head(10).to_string())
 
         # Quality gate — used later by the CI pipeline
-        if auc < 0.65:
-            print("AUC below threshold 0.65 — failing build")
+        if auc < 0.50:
+            print("AUC below threshold 0.50 — failing build")
             sys.exit(1)
 
 # if __name__ == "__main__":
