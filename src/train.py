@@ -1,4 +1,8 @@
 # Model training with full MLflow tracking
+from xml.parsers.expat import model
+
+from check_importance import X_train
+from check_importance import X_train
 import mlflow
 import mlflow.sklearn
 import xgboost as xgb
@@ -7,6 +11,7 @@ from sklearn.metrics import (roc_auc_score,
                               precision_score, recall_score)
 import sys
 import pandas as pd
+import joblib, os
 from src.features.engineer import load_and_clean, engineer_features
 
 def train(data_path):
@@ -61,6 +66,13 @@ def train(data_path):
         # Save the model file as an artifact
         mlflow.sklearn.log_model(model, "model")
 
+        # Save model file for Docker container to use
+        os.makedirs("model_artifacts", exist_ok=True)
+        joblib.dump(model, "model_artifacts/model.pkl")
+        joblib.dump(list(X_train.columns),
+            "model_artifacts/feature_columns.pkl")
+        print("Model saved to model_artifacts/")
+
         # ── Feature importance ────────────────────────────────
         importance = pd.Series(
             model.feature_importances_,
@@ -87,6 +99,9 @@ def train(data_path):
 
 # if __name__ == "__main__":
 #     train("data/diabetic_data.csv")
+
+
+
 
 if __name__ == "__main__":
     import sys
